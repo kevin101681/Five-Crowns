@@ -43,24 +43,24 @@ export default function PlayerScoreEditor({
   const currentScore = wentOut ? 0 : selectedCards.reduce((sum, card) => sum + getCardPoints(card, wildCard), 0);
 
   return (
-    <div className="mt-4 p-4 bg-surface rounded-2xl border border-outline/20 space-y-4">
+    <div className="mt-2 p-2 bg-surface rounded-xl border border-outline/10 space-y-2">
       <button
         onClick={handleWentOut}
-        className={`w-full py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
+        className={`w-full py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 text-sm ${
           wentOut 
             ? 'bg-primary text-white' 
             : 'bg-surface-variant text-on-surface hover:bg-primary/10'
         }`}
       >
-        {wentOut && <Check size={18} />}
+        {wentOut && <Check size={14} />}
         Went Out
       </button>
 
       {!wentOut && (
         <>
-          <div className="space-y-2">
-            <p className="text-[10px] font-bold uppercase text-on-surface-variant tracking-widest">Cards in Hand</p>
-            <div className="flex flex-wrap gap-2 min-h-[40px] p-2 bg-surface-variant/50 rounded-xl">
+          <div className="space-y-1">
+            <p className="text-[9px] font-bold uppercase text-on-surface-variant tracking-widest">Cards in Hand</p>
+            <div className="flex flex-wrap gap-1 min-h-[32px] p-1.5 bg-surface-variant/50 rounded-lg">
               <AnimatePresence mode="popLayout">
                 {selectedCards.map((card, idx) => (
                   <motion.button
@@ -69,27 +69,27 @@ export default function PlayerScoreEditor({
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}
                     onClick={() => removeCard(idx)}
-                    className={`px-2 py-1 rounded-lg text-xs font-bold elevation-1 flex items-center gap-1 ${
+                    className={`px-1.5 py-0.5 rounded-md text-[10px] font-bold elevation-1 flex items-center gap-1 ${
                       card === 'Joker' || card === wildCard ? 'bg-primary/20 text-primary border border-primary/40' : 'bg-surface text-on-surface'
                     }`}
                   >
                     {card}
-                    <X size={10} />
+                    <X size={8} />
                   </motion.button>
                 ))}
               </AnimatePresence>
               {selectedCards.length === 0 && (
-                <span className="text-xs text-on-surface-variant/40 italic py-1">No cards added</span>
+                <span className="text-[10px] text-on-surface-variant/40 italic py-0.5">None</span>
               )}
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-1.5">
+          <div className="grid grid-cols-4 gap-1">
             {CARD_VALUES.map((card) => (
               <button
                 key={card}
                 onClick={() => toggleCard(card)}
-                className={`py-2 rounded-lg font-bold text-sm transition-all active:scale-90 elevation-1 ${
+                className={`py-1.5 rounded-md font-bold text-xs transition-all active:scale-90 elevation-1 ${
                   card === 'Joker' || card === wildCard ? 'bg-primary/10 text-primary border border-primary/20' : 'bg-surface text-on-surface'
                 }`}
               >
