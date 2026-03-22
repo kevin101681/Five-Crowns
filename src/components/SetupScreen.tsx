@@ -191,7 +191,7 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
       )}
 
       {/* Player cards — vertically centered */}
-      <div className="flex-1 flex flex-col items-center justify-center py-6">
+      <div className="flex-1 flex flex-col items-center justify-start pt-4 pb-6">
         <AnimatePresence mode="popLayout">
           {players.length === 0 ? (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full text-center py-16 border-2 border-dashed border-outline/10 rounded-3xl">
