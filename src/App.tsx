@@ -86,7 +86,7 @@ export default function App() {
         <img 
           src="/images/logo.svg" 
           alt="Five Crowns" 
-          className="h-10 w-auto object-contain"
+          className="h-20 w-auto object-contain"
           referrerPolicy="no-referrer"
         />
         <button
