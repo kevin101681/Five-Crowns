@@ -1,0 +1,5 @@
+{
+  "name": "Five Crowns Scorekeeper",
+  "description": "A Material Design 3 score tracking app for the Five Crowns card game, featuring visual card selection and real-time scoring.",
+  "requestFramePermissions": []
+}

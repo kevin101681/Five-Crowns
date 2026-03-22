@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #7990ab; /* New Slate Blue */
+  --color-primary-container: #f0f2f5;
+  --color-on-primary-container: #2c3e50;
+  --color-surface: #f5f5f5;
+  --color-surface-variant: #eeeeee;
+  --color-on-surface: #212121;
+  --color-on-surface-variant: #616161;
+  --color-outline: #bdbdbd;
+  
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  .dark {
+    --color-primary: #9ab0cb; /* Lighter Slate Blue for Dark Mode */
+    --color-primary-container: #2c3e50;
+    --color-on-primary-container: #f0f2f5;
+    --color-surface: #121212;
+    --color-surface-variant: #1e1e1e;
+    --color-on-surface: #e1e1e1;
+    --color-on-surface-variant: #b0b0b0;
+    --color-outline: #424242;
+  }
+
+  body {
+    @apply bg-surface text-on-surface font-sans antialiased transition-colors duration-300;
+  }
+}
+
+/* Material Design 3 Elevation */
+.elevation-1 {
+  box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
+}
+
+.dark .elevation-1 {
+  box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.3), 0px 1px 2px 0px rgba(0, 0, 0, 0.5);
+}
+
+.elevation-2 {
+  box-shadow: 0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
+}
+
+.dark .elevation-2 {
+  box-shadow: 0px 2px 6px 2px rgba(0, 0, 0, 0.3), 0px 1px 2px 0px rgba(0, 0, 0, 0.5);
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
