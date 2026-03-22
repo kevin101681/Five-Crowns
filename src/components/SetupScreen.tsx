@@ -182,7 +182,7 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
   const avgScore = (stats: PlayerStats) => stats.gamesPlayed > 0 ? Math.round(stats.totalScore / stats.gamesPlayed) : null;
 
   return (
-    <div className="flex flex-col p-4 max-w-md mx-auto relative min-h-[calc(100vh-120px)] md:max-w-5xl md:h-[calc(100vh-120px)] md:min-h-0">
+    <div className="flex flex-col p-4 max-w-md mx-auto relative min-h-[calc(100vh-96px)] md:max-w-5xl md:h-[calc(100vh-96px)] md:min-h-0">
       {!dbConfigured && (
         <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-2xl text-amber-500 text-xs mb-3">
           <p className="font-bold mb-0.5 uppercase tracking-wider">Database Not Configured</p>
