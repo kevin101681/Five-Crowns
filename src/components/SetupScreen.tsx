@@ -17,6 +17,7 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
   const [newName, setNewName] = useState("");
   const [newAvatar, setNewAvatar] = useState<string | undefined>(undefined);
   const [dbConfigured, setDbConfigured] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [isAddPlayerOpen, setIsAddPlayerOpen] = useState(false);
   const [dealerId, setDealerId] = useState<string | null>(null);
   const [isAssigningDealer, setIsAssigningDealer] = useState(false);
@@ -59,6 +60,8 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
         }
       } catch (err) {
         console.error("Failed to fetch players:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchPlayers();
@@ -193,7 +196,7 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
       {/* Player cards — vertically centered */}
       <div className="flex-1 flex flex-col items-center justify-start pt-4 pb-6">
         <AnimatePresence mode="popLayout">
-          {players.length === 0 ? (
+          {isLoading ? null : players.length === 0 ? (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full text-center py-16 border-2 border-dashed border-outline/10 rounded-3xl">
               <User size={48} className="mx-auto text-outline/20 mb-3" />
               <p className="text-on-surface-variant/50 text-sm">Add at least 2 players to start</p>
