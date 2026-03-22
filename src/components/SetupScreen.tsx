@@ -136,7 +136,7 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
         const updatedList = players.map((p) => (p.id === updated.id ? updated : p));
         setPlayers(updatedList);
         loadStats(updatedList);
-        setProfilePlayer(updated);
+        setProfilePlayer(null);
       }
     } catch (err) {
       console.error("Failed to update player:", err);
