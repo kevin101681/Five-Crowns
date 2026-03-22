@@ -96,10 +96,25 @@ export default function GameBoard({ players, rounds, onUpdateRound, onCompleteRo
               >
                 <div className="w-full flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold shrink-0 ${
-                      scoreData?.wentOut ? 'bg-primary text-white' : 'bg-primary/10 text-primary'
-                    }`}>
-                      {calculateTotal(player.id)}
+                    <div className="relative">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-outline/20 shrink-0">
+                        {player.avatarUrl ? (
+                          <img src={player.avatarUrl} alt={player.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        ) : (
+                          <div className={`w-full h-full flex items-center justify-center font-bold ${
+                            scoreData?.wentOut ? 'bg-primary text-white' : 'text-primary'
+                          }`}>
+                            {calculateTotal(player.id)}
+                          </div>
+                        )}
+                      </div>
+                      {player.avatarUrl && (
+                        <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-surface ${
+                          scoreData?.wentOut ? 'bg-primary text-white' : 'bg-surface-variant text-primary'
+                        }`}>
+                          {calculateTotal(player.id)}
+                        </div>
+                      )}
                     </div>
                     <div className="text-left overflow-hidden">
                       <div className="font-bold truncate">{player.name}</div>

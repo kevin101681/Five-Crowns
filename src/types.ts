@@ -1,6 +1,7 @@
 export interface Player {
   id: string;
   name: string;
+  avatarUrl?: string;
 }
 
 export interface RoundScore {

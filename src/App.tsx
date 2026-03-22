@@ -3,7 +3,7 @@ import { Player, Round, GameStatus, RoundScore } from './types';
 import { ROUNDS_DATA } from './constants';
 import SetupScreen from './components/SetupScreen';
 import GameBoard from './components/GameBoard';
-import { Trophy, RotateCcw, Moon, Sun } from 'lucide-react';
+import { Trophy, RotateCcw, Moon, Sun, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function App() {
@@ -121,6 +121,13 @@ export default function App() {
                   <div key={p.id} className="flex justify-between items-center bg-surface-variant p-4 rounded-2xl elevation-1 border border-outline/10">
                     <div className="flex items-center gap-3">
                       <span className="font-bold text-primary">#{idx + 1}</span>
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-outline/20">
+                        {p.avatarUrl ? (
+                          <img src={p.avatarUrl} alt={p.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        ) : (
+                          <User size={14} className="text-primary" />
+                        )}
+                      </div>
                       <span className="font-medium text-on-surface">{p.name}</span>
                     </div>
                     <span className="font-bold text-on-surface">{calculateTotal(p.id)}</span>
