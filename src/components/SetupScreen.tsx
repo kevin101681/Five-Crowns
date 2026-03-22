@@ -221,7 +221,7 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
       : null;
 
   return (
-    <div className="flex flex-col p-4 max-w-md mx-auto relative min-h-[calc(100vh-120px)]">
+    <div className="flex flex-col p-4 max-w-md mx-auto relative min-h-[calc(100vh-120px)] md:max-w-5xl md:h-[calc(100vh-120px)] md:min-h-0">
       {!dbConfigured && (
         <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-2xl text-amber-500 text-xs mb-3">
           <p className="font-bold mb-0.5 uppercase tracking-wider">Database Not Configured</p>
@@ -247,7 +247,7 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
               </p>
             </motion.div>
           ) : (
-            <div className="grid grid-cols-2 gap-3 w-full">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 w-full">
               {players.map((player) => {
                 const isDealer = dealerId === player.id;
                 const isHighlighted = highlightedPlayerId === player.id;
