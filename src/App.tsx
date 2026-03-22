@@ -98,7 +98,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-surface flex flex-col relative">
-      <header className="pt-4 pb-2 flex justify-center relative">
+      <header className="pt-8 pb-2 flex justify-center relative">
         <img
           src="/images/logo.svg"
           alt="Five Crowns"
