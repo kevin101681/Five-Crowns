@@ -81,14 +81,21 @@ export default function App() {
   const winner = [...players].sort((a, b) => calculateTotal(a.id) - calculateTotal(b.id))[0];
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col">
-      <header className="pt-8 pb-4 flex justify-center">
+    <div className="min-h-screen bg-surface flex flex-col relative">
+      <header className="pt-4 pb-2 flex justify-center relative">
         <img 
           src="/images/logo.svg" 
           alt="Five Crowns" 
-          className="h-12 w-auto object-contain"
+          className="h-10 w-auto object-contain"
           referrerPolicy="no-referrer"
         />
+        <button
+          onClick={() => setIsDarkMode(!isDarkMode)}
+          className="absolute top-4 right-4 p-2 rounded-xl bg-surface-variant text-on-surface-variant hover:text-primary transition-all elevation-1 border border-outline/10 active:scale-95"
+          title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+        >
+          {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
       </header>
       <main className="flex-1">
         {status === 'setup' ? (
@@ -143,27 +150,6 @@ export default function App() {
           </motion.div>
         )}
       </main>
-
-      <footer className="p-6 flex flex-col items-center gap-4">
-        <div className="flex items-center gap-6">
-          <button
-            onClick={() => setIsDarkMode(!isDarkMode)}
-            className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors py-2 px-4 rounded-full hover:bg-primary/5"
-            title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          >
-            {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
-            <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
-          </button>
-          
-          <button
-            onClick={resetGame}
-            className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors py-2 px-4 rounded-full hover:bg-primary/5"
-          >
-            <RotateCcw size={18} />
-            <span>Reset Game</span>
-          </button>
-        </div>
-      </footer>
     </div>
   );
 }
