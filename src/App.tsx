@@ -82,8 +82,13 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-surface flex flex-col">
-      <header className="pt-8 pb-4 text-center">
-        <h1 className="text-3xl font-black text-primary uppercase tracking-tighter">Five Crowns</h1>
+      <header className="pt-8 pb-4 flex justify-center">
+        <img 
+          src="/images/logo.svg" 
+          alt="Five Crowns" 
+          className="h-12 w-auto object-contain"
+          referrerPolicy="no-referrer"
+        />
       </header>
       <main className="flex-1">
         {status === 'setup' ? (

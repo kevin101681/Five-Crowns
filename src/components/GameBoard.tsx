@@ -82,7 +82,7 @@ export default function GameBoard({ players, rounds, onUpdateRound, onCompleteRo
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-2">
+        <div className="flex flex-wrap justify-center gap-4 w-full">
           {players.map((player) => {
             const scoreData = currentRound.scores[player.id];
             const hasScore = !!scoreData;
@@ -90,48 +90,44 @@ export default function GameBoard({ players, rounds, onUpdateRound, onCompleteRo
             return (
               <div
                 key={player.id}
-                className={`w-full p-3 rounded-xl transition-all h-fit bg-surface border ${
+                className={`flex-1 min-w-[300px] max-w-[500px] p-4 rounded-2xl transition-all h-fit bg-surface border ${
                   hasScore ? 'border-transparent' : 'border-outline/10'
                 }`}
               >
-                <div className="w-full flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
+                <div className="w-full flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
                     <div className="relative">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-outline/10 shrink-0">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-outline/10 shrink-0">
                         {player.avatarUrl ? (
                           <img src={player.avatarUrl} alt={player.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                         ) : (
-                          <div className={`w-full h-full flex items-center justify-center text-xs font-bold ${
-                            scoreData?.wentOut ? 'bg-primary text-white' : 'text-primary'
-                          }`}>
-                            {calculateTotal(player.id)}
+                          <div className="w-full h-full flex items-center justify-center text-lg font-bold text-primary">
+                            {player.name.charAt(0).toUpperCase()}
                           </div>
                         )}
                       </div>
-                      {player.avatarUrl && (
-                        <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold border border-surface ${
-                          scoreData?.wentOut ? 'bg-primary text-white' : 'bg-surface-variant text-primary'
-                        }`}>
-                          {calculateTotal(player.id)}
-                        </div>
-                      )}
                     </div>
                     <div className="text-left overflow-hidden">
-                      <div className="font-bold text-sm truncate max-w-[80px]">{player.name}</div>
-                      {scoreData?.wentOut && <div className="text-[8px] text-primary font-bold uppercase">Out</div>}
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-base truncate">{player.name}</span>
+                        <span className="text-xs font-bold text-primary bg-primary/15 px-2.5 py-0.5 rounded-full border border-primary/30 shadow-sm">
+                          {calculateTotal(player.id)}
+                        </span>
+                      </div>
+                      {scoreData?.wentOut && <div className="text-[10px] text-primary font-bold uppercase tracking-wider">Went Out</div>}
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-1 shrink-0">
+                  <div className="flex items-center gap-2 shrink-0">
                     {hasScore && (
                       <div className="text-right">
-                        <div className="text-lg font-bold text-primary">{scoreData.score}</div>
+                        <div className="text-2xl font-black text-primary drop-shadow-sm">{scoreData.score}</div>
                       </div>
                     )}
                   </div>
                 </div>
 
-                <div className="pt-1.5 border-t border-outline/5">
+                <div className="pt-2 border-t border-outline/5">
                   <PlayerScoreEditor
                     wildCard={currentRound.wildCard}
                     scoreData={scoreData}
