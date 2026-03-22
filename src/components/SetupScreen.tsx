@@ -22,7 +22,6 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
   const [isAssigningDealer, setIsAssigningDealer] = useState(false);
   const [highlightedPlayerId, setHighlightedPlayerId] = useState<string | null>(null);
   const [profilePlayer, setProfilePlayer] = useState<Player | null>(null);
-  const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editName, setEditName] = useState("");
   const [editAvatar, setEditAvatar] = useState<string | undefined>(undefined);
   const [statsMap, setStatsMap] = useState<Record<string, PlayerStats>>({});
@@ -158,7 +157,6 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
         setPlayers(updatedList);
         loadStats(updatedList);
         setProfilePlayer(updated);
-        setIsEditingProfile(false);
       }
     } catch (err) {
       console.error("Failed to update player:", err);
@@ -205,7 +203,6 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
     setProfilePlayer(player);
     setEditName(player.name);
     setEditAvatar(player.avatarUrl);
-    setIsEditingProfile(false);
   };
 
   const selectedPlayers = players.filter((p) => selectedPlayerIds.has(p.id));
@@ -479,7 +476,7 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => { setProfilePlayer(null); setIsEditingProfile(false); }}
+              onClick={() => setProfilePlayer(null)}
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
             />
             <motion.div
@@ -494,7 +491,7 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
                   {isEditingProfile ? "Edit Profile" : "Player Profile"}
                 </h3>
                 <button
-                  onClick={() => { setProfilePlayer(null); setIsEditingProfile(false); }}
+                  onClick={() => setProfilePlayer(null)}
                   className="p-1.5 hover:bg-surface-variant rounded-full transition-colors"
                 >
                   <X size={18} />
