@@ -63,12 +63,10 @@ export default function App() {
   };
 
   const resetGame = () => {
-    if (confirm("Are you sure you want to reset the game? All scores will be lost.")) {
-      statsRecordedRef.current = false;
-      setStatus("setup");
-      setPlayers([]);
-      setRounds([]);
-    }
+    statsRecordedRef.current = false;
+    setStatus("setup");
+    setPlayers([]);
+    setRounds([]);
   };
 
   const calculateTotal = (playerId: string) =>
