@@ -7,10 +7,18 @@ import GameBoard from "./components/GameBoard";
 import { Trophy, RotateCcw, Moon, Sun, User } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
+interface ActiveSession {
+  id: string;
+  players: Player[];
+  rounds: Round[];
+}
+
 export default function App() {
   const [status, setStatus] = useState<GameStatus>("setup");
   const [players, setPlayers] = useState<Player[]>([]);
   const [rounds, setRounds] = useState<Round[]>([]);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [activeSession, setActiveSession] = useState<ActiveSession | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
       return (
@@ -33,8 +41,17 @@ export default function App() {
     }
   }, [isDarkMode]);
 
-  const startGame = (newPlayers: Player[]) => {
+  // Check for an in-progress session on mount
+  useEffect(() => {
+    fetch("/api/sessions/active")
+      .then((r) => r.json())
+      .then((data) => { if (data) setActiveSession(data); })
+      .catch(() => {});
+  }, []);
+
+  const startGame = async (newPlayers: Player[]) => {
     statsRecordedRef.current = false;
+    setActiveSession(null);
     setPlayers(newPlayers);
     const initialRounds: Round[] = ROUNDS_DATA.map((r) => ({
       ...r,
@@ -42,6 +59,30 @@ export default function App() {
       isCompleted: false,
     }));
     setRounds(initialRounds);
+    setStatus("playing");
+
+    // Create a session in Neon
+    try {
+      const res = await fetch("/api/sessions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ players: newPlayers, rounds: initialRounds }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSessionId(data.id ?? null);
+      }
+    } catch (err) {
+      console.error("Failed to create game session:", err);
+    }
+  };
+
+  const resumeGame = (session: ActiveSession) => {
+    statsRecordedRef.current = false;
+    setSessionId(session.id);
+    setPlayers(session.players);
+    setRounds(session.rounds);
+    setActiveSession(null);
     setStatus("playing");
   };
 
@@ -55,15 +96,25 @@ export default function App() {
   };
 
   const completeRound = (roundNumber: number) => {
-    setRounds((prev) =>
-      prev.map((r) =>
+    setRounds((prev) => {
+      const updated = prev.map((r) =>
         r.number === roundNumber ? { ...r, isCompleted: true } : r
-      )
-    );
+      );
+      // Persist round progress to Neon immediately
+      if (sessionId) {
+        fetch(`/api/sessions/${sessionId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rounds: updated, isComplete: false }),
+        }).catch((err) => console.error("Failed to save round to DB:", err));
+      }
+      return updated;
+    });
   };
 
   const resetGame = () => {
     statsRecordedRef.current = false;
+    setSessionId(null);
     setStatus("setup");
     setPlayers([]);
     setRounds([]);
@@ -72,7 +123,7 @@ export default function App() {
   const calculateTotal = (playerId: string) =>
     rounds.reduce((total, round) => total + (round.scores[playerId]?.score || 0), 0);
 
-  // Check if game is finished and record stats once
+  // Check if game is finished, record stats, and mark session complete
   useEffect(() => {
     if (status === "playing" && rounds.length > 0 && rounds.every((r) => r.isCompleted)) {
       if (!statsRecordedRef.current) {
@@ -89,6 +140,15 @@ export default function App() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ results }),
         }).catch((err) => console.error("Failed to save game results to DB:", err));
+
+        // Mark session complete
+        if (sessionId) {
+          fetch(`/api/sessions/${sessionId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ rounds, isComplete: true }),
+          }).catch((err) => console.error("Failed to mark session complete:", err));
+        }
       }
       setStatus("finished");
     }
@@ -117,7 +177,11 @@ export default function App() {
       </header>
       <main className="flex-1">
         {status === "setup" ? (
-          <SetupScreen onStart={startGame} />
+          <SetupScreen
+            onStart={startGame}
+            activeSession={activeSession}
+            onResume={resumeGame}
+          />
         ) : status === "playing" ? (
           <GameBoard
             players={players}
@@ -138,9 +202,7 @@ export default function App() {
             <p className="text-on-surface-variant mb-8">The winner is</p>
 
             <div className="bg-surface-variant p-8 rounded-3xl elevation-2 mb-12 border border-outline/10">
-              <div className="text-5xl font-black text-primary mb-2">
-                {winner.name}
-              </div>
+              <div className="text-5xl font-black text-primary mb-2">{winner.name}</div>
               <div className="text-2xl font-bold text-on-surface-variant">
                 Score: {calculateTotal(winner.id)}
               </div>
@@ -162,23 +224,14 @@ export default function App() {
                         <span className="font-bold text-primary">#{idx + 1}</span>
                         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-outline/20">
                           {p.avatarUrl ? (
-                            <img
-                              src={p.avatarUrl}
-                              alt={p.name}
-                              className="w-full h-full object-cover"
-                              referrerPolicy="no-referrer"
-                            />
+                            <img src={p.avatarUrl} alt={p.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                           ) : (
                             <User size={14} className="text-primary" />
                           )}
                         </div>
-                        <span className="font-medium text-on-surface">
-                          {p.name}
-                        </span>
+                        <span className="font-medium text-on-surface">{p.name}</span>
                       </div>
-                      <span className="font-bold text-on-surface">
-                        {calculateTotal(p.id)}
-                      </span>
+                      <span className="font-bold text-on-surface">{calculateTotal(p.id)}</span>
                     </div>
                   ))}
               </div>

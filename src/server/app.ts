@@ -33,13 +33,21 @@ async function initDb() {
         best_score INT
       );
     `);
-    // Add stat columns to existing tables that predate this migration
     await client.query(`
       ALTER TABLE players
         ADD COLUMN IF NOT EXISTS games_played INT DEFAULT 0,
         ADD COLUMN IF NOT EXISTS games_won INT DEFAULT 0,
         ADD COLUMN IF NOT EXISTS total_score INT DEFAULT 0,
         ADD COLUMN IF NOT EXISTS best_score INT;
+    `);
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS game_sessions (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        players JSONB NOT NULL,
+        rounds JSONB NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        is_complete BOOLEAN DEFAULT FALSE
+      );
     `);
     client.release();
     dbInitialized = true;
@@ -50,9 +58,7 @@ async function initDb() {
 }
 
 const app = express();
-
 app.use(express.json({ limit: "10mb" }));
-
 app.use(async (req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   await initDb();
@@ -62,6 +68,8 @@ app.use(async (req, res, next) => {
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", env: process.env.NODE_ENV });
 });
+
+// -- Players ------------------------------------------------------------------
 
 app.get("/api/players", async (req, res) => {
   if (!process.env.DATABASE_URL) return res.json([]);
@@ -115,7 +123,8 @@ app.delete("/api/players/:id", async (req, res) => {
   }
 });
 
-// Save game results and update player stats
+// -- Game results / stats -----------------------------------------------------
+
 app.post("/api/game-results", async (req, res) => {
   if (!process.env.DATABASE_URL) return res.json({ success: true });
   const { results } = req.body as {
@@ -141,6 +150,53 @@ app.post("/api/game-results", async (req, res) => {
   } catch (err) {
     console.error("Error saving game results:", err);
     res.status(500).json({ error: "Failed to save game results" });
+  }
+});
+
+// -- Game sessions (in-progress game persistence) -----------------------------
+
+app.get("/api/sessions/active", async (req, res) => {
+  if (!process.env.DATABASE_URL) return res.json(null);
+  try {
+    const result = await pool.query(
+      `SELECT * FROM game_sessions WHERE is_complete = FALSE ORDER BY updated_at DESC LIMIT 1`
+    );
+    if (result.rows.length === 0) return res.json(null);
+    const row = result.rows[0];
+    res.json({ id: row.id, players: row.players, rounds: row.rounds });
+  } catch (err) {
+    console.error("Error fetching active session:", err);
+    res.status(500).json({ error: "Failed to fetch active session" });
+  }
+});
+
+app.post("/api/sessions", async (req, res) => {
+  if (!process.env.DATABASE_URL) return res.json({ id: null });
+  const { players, rounds } = req.body;
+  try {
+    const result = await pool.query(
+      `INSERT INTO game_sessions (players, rounds) VALUES ($1, $2) RETURNING id`,
+      [JSON.stringify(players), JSON.stringify(rounds)]
+    );
+    res.json({ id: result.rows[0].id });
+  } catch (err) {
+    console.error("Error creating session:", err);
+    res.status(500).json({ error: "Failed to create session" });
+  }
+});
+
+app.put("/api/sessions/:id", async (req, res) => {
+  if (!process.env.DATABASE_URL) return res.json({ success: true });
+  const { rounds, isComplete } = req.body;
+  try {
+    await pool.query(
+      `UPDATE game_sessions SET rounds = $1, is_complete = $2, updated_at = NOW() WHERE id = $3`,
+      [JSON.stringify(rounds), isComplete ?? false, req.params.id]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error updating session:", err);
+    res.status(500).json({ error: "Failed to update session" });
   }
 });
 

@@ -1,17 +1,25 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Player } from "../types";
+import { Player, Round } from "../types";
 import { PlayerStats, getPlayerStats, deletePlayerStats } from "../stats";
 import {
   Plus, Play, User, Camera, X, Check, RotateCcw,
-  Trash2, Info, Trophy, Target, TrendingUp,
+  Trash2, Info, Trophy, Target, TrendingUp, PlayCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
-interface SetupScreenProps {
-  onStart: (players: Player[]) => void;
+interface ActiveSession {
+  id: string;
+  players: Player[];
+  rounds: Round[];
 }
 
-export default function SetupScreen({ onStart }: SetupScreenProps) {
+interface SetupScreenProps {
+  onStart: (players: Player[]) => Promise<void> | void;
+  activeSession?: ActiveSession | null;
+  onResume?: (session: ActiveSession) => void;
+}
+
+export default function SetupScreen({ onStart, activeSession, onResume }: SetupScreenProps) {
   const [players, setPlayers] = useState<Player[]>([]);
   const [selectedPlayerIds, setSelectedPlayerIds] = useState<Set<string>>(new Set());
   const [newName, setNewName] = useState("");
@@ -198,6 +206,29 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
           <p className="font-bold mb-0.5 uppercase tracking-wider">Database Not Configured</p>
           <p className="opacity-80">Players will not be saved between sessions. Set <code className="bg-amber-500/20 px-1 rounded">DATABASE_URL</code> in Settings.</p>
         </div>
+      )}
+
+      {/* Resume in-progress game banner */}
+      {activeSession && onResume && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-3 flex items-center gap-3 bg-primary/10 border border-primary/30 rounded-2xl p-4"
+        >
+          <PlayCircle size={22} className="text-primary shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-black text-primary">Game in progress</p>
+            <p className="text-xs text-on-surface-variant truncate">
+              {activeSession.players.map((p) => p.name).join(", ")} &mdash; Round {activeSession.rounds.filter((r) => r.isCompleted).length + 1} of 11
+            </p>
+          </div>
+          <button
+            onClick={() => onResume(activeSession)}
+            className="shrink-0 bg-primary text-white px-4 py-2 rounded-xl font-black text-sm active:scale-95 transition-all"
+          >
+            Resume
+          </button>
+        </motion.div>
       )}
 
       {/* Player cards + action button */}
