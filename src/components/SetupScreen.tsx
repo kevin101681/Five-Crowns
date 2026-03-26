@@ -254,7 +254,7 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
                     </span>
                     {isDealer && <span className="text-[9px] font-black uppercase text-primary tracking-widest -mt-1">Dealer</span>}
                     <div className="text-[11px] text-on-surface-variant/70 font-medium">
-                      {stats.gamesPlayed > 0 ? `${stats.gamesWon}W · ${stats.gamesPlayed - stats.gamesWon}L` : "No games yet"}
+                      {stats.gamesPlayed > 0 ? `${stats.gamesWon}W - ${stats.gamesPlayed - stats.gamesWon}L` : "No games yet"}
                     </div>
                   </motion.div>
                 );
