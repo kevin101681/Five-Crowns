@@ -13,7 +13,10 @@ interface GameBoardProps {
 }
 
 export default function GameBoard({ players, rounds, onUpdateRound, onCompleteRound }: GameBoardProps) {
-  const [activeRound, setActiveRound] = useState<number>(1);
+  const [activeRound, setActiveRound] = useState<number>(() => {
+    const firstIncomplete = rounds.find((r) => !r.isCompleted);
+    return firstIncomplete?.number ?? 1;
+  });
 
   const currentRound = rounds.find((r) => r.number === activeRound)!;
 
