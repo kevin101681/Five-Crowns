@@ -82,9 +82,13 @@ export default function App() {
           score: calculateTotal(p.id),
         }));
         const minScore = Math.min(...scores.map((s) => s.score));
-        recordGameResults(
-          scores.map((s) => ({ ...s, isWinner: s.score === minScore }))
-        );
+        const results = scores.map((s) => ({ ...s, isWinner: s.score === minScore }));
+        recordGameResults(results);
+        fetch("/api/game-results", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ results }),
+        }).catch((err) => console.error("Failed to save game results to DB:", err));
       }
       setStatus("finished");
     }

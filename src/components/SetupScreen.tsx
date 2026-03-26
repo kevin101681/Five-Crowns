@@ -56,7 +56,14 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
           const data = await response.json();
           setPlayers(data);
           setSelectedPlayerIds(new Set());
-          loadStats(data);
+          // Prefer stats from DB; fall back to localStorage for each player
+          const map: Record<string, PlayerStats> = {};
+          data.forEach((p: Player & { stats?: PlayerStats }) => {
+            const dbStats = p.stats;
+            const localStats = getPlayerStats(p.id);
+            map[p.id] = dbStats && dbStats.gamesPlayed > 0 ? dbStats : localStats;
+          });
+          setStatsMap(map);
         }
       } catch (err) {
         console.error("Failed to fetch players:", err);
