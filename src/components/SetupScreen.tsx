@@ -200,8 +200,8 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
         </div>
       )}
 
-      {/* Player cards — vertically centered */}
-      <div className="flex-1 flex flex-col items-center justify-start pt-4 pb-6">
+      {/* Player cards + action button */}
+      <div className="flex flex-col items-center pt-4 pb-4 w-full">
         <AnimatePresence mode="popLayout">
           {isLoading ? null : players.length === 0 ? (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full text-center py-16 border-2 border-dashed border-outline/10 rounded-3xl">
@@ -262,17 +262,14 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
             </div>
           )}
         </AnimatePresence>
-      </div>
 
-      {/* Bottom action button */}
-      <div className="mt-2 pb-2">
         {selectedPlayers.length >= 2 && (
           <motion.button
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             onClick={dealerId ? () => onStart(selectedPlayers) : assignDealer}
             disabled={isAssigningDealer}
-            className="w-full py-4 rounded-2xl font-black text-lg flex items-center justify-center gap-2 elevation-2 active:scale-95 transition-all bg-primary text-white shadow-lg shadow-primary/30 disabled:opacity-50"
+            className="mt-4 w-full py-4 rounded-2xl font-black text-lg flex items-center justify-center gap-2 elevation-2 active:scale-95 transition-all bg-primary text-white shadow-lg shadow-primary/30 disabled:opacity-50"
           >
             {isAssigningDealer ? (
               <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}>
@@ -283,6 +280,8 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
           </motion.button>
         )}
       </div>
+
+
 
       {/* Add Player FAB */}
       <button
